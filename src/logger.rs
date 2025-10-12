@@ -52,12 +52,12 @@ impl Log for Logger {
     fn flush(&self) {}
 }
 
-/// Installs the logger.
+/// Initializes the logger.
 ///
 /// # Panics
 ///
 /// This function panics if a logger has already been installed.
-pub fn install(max_level: LevelFilter) {
+pub fn init(max_level: LevelFilter) {
     let logger = Logger { max_level };
     // NOTE: `SetLoggerError` does *not* implement `Error`
     log::set_boxed_logger(Box::new(logger)).expect("logger already installed");
@@ -73,7 +73,7 @@ mod tests {
     /// This test should be run with the `--no-capture` option.
     #[test]
     fn demo() {
-        super::install(LevelFilter::Trace);
+        super::init(LevelFilter::Trace);
         log::error!("this is a message at the ERROR level");
         log::warn!("this is a message at the WARN level");
         log::info!("this is a message at the INFO level");

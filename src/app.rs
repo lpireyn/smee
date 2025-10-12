@@ -61,8 +61,8 @@ impl App {
         } else {
             LevelFilter::Info
         };
-        // Install logger
-        logger::install(max_level);
+        // Initialize logger
+        logger::init(max_level);
         // Run subcommand
         if let Err(err) = match command.subcommand {
             SmeeSubcommand::Install(args) => self.run_install(&args),
