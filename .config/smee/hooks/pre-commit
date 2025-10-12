@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+cargo +nightly fmt --check &&
+    RUSTFLAGS='--deny=warnings' cargo test --workspace
