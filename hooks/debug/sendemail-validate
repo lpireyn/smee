@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_sendemail_validate
+
+set -u
+
+echo "debug: sendemail-validate" "$@"
+echo "debug: GIT_SENDEMAIL_FILE_COUNTER: $GIT_SENDEMAIL_FILE_COUNTER"
+echo "debug: GIT_SENDEMAIL_FILE_TOTAL: $GIT_SENDEMAIL_FILE_TOTAL"
+echo "debug: contents of $1:"
+cat "$1"
+echo "debug: contents of $2:"
+cat "$2"

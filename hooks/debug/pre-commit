@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_pre_commit
+
+set -u
+
+echo "debug: pre-commit" "$@"

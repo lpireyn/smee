@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_pre_auto_gc
+
+set -u
+
+echo "debug: pre-auto-gc" "$@"

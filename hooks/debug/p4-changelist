@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_p4_changelist
+
+set -u
+
+echo "debug: p4-changelist" "$@"
+echo "debug: contents of $1:"
+cat "$1"

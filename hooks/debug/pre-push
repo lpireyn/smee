@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_pre_push
+
+set -u
+
+echo "debug: pre-push" "$@"
+echo "debug: contents of stdin:"
+cat -

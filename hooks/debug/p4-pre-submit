@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_p4_pre_submit
+
+set -u
+
+echo "debug: p4-pre-submit" "$@"

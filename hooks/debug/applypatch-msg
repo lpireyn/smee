@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# Reference: https://git-scm.com/docs/githooks#_applypatch_msg
+
+set -u
+
+echo "debug: applypatch-msg" "$@"
+echo "debug: contents of $1:"
+cat "$1"
