@@ -31,6 +31,7 @@ use eyre::Result;
 use eyre::WrapErr;
 use eyre::bail;
 use is_executable::IsExecutable;
+use log::LevelFilter;
 
 use crate::cli::HookArgs;
 use crate::cli::InstallArgs;
@@ -50,10 +51,18 @@ impl App {
     }
 
     pub fn run(self) {
-        // Install logger
-        logger::install();
         // Let Clap report errors and exit if necessary
         let command = SmeeCommand::parse();
+        // Determine max log level
+        let max_level = if command.quiet {
+            LevelFilter::Warn
+        } else if command.verbose {
+            LevelFilter::Debug
+        } else {
+            LevelFilter::Info
+        };
+        // Install logger
+        logger::install(max_level);
         // Run subcommand
         if let Err(err) = match command.subcommand {
             SmeeSubcommand::Install(args) => self.run_install(&args),

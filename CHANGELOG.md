@@ -16,3 +16,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `help` subcommand to `smee` command
 - Added `--version` option to `smee` command
 - Added `--help` option to `smee` command
+- Added `--quiet` option to `smee` command
+- Added `--verbose` option to `smee` command

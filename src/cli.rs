@@ -20,6 +20,14 @@ use clap::Subcommand;
 #[derive(Debug, Parser)]
 #[command(version)]
 pub struct SmeeCommand {
+    /// Do not print information log messages.
+    #[arg(conflicts_with = "verbose", long, short = 'q')]
+    pub quiet: bool,
+
+    /// Print debug log messages.
+    #[arg(conflicts_with = "quiet", long, short = 'v')]
+    pub verbose: bool,
+
     #[command(subcommand)]
     pub subcommand: SmeeSubcommand,
 }

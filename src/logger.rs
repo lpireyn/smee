@@ -23,12 +23,13 @@ use owo_colors::style;
 
 /// Simple logger that prints messages to stderr, with a bit of colors.
 #[derive(Debug)]
-struct Logger;
+struct Logger {
+    max_level: LevelFilter,
+}
 
 impl Log for Logger {
     fn enabled(&self, metadata: &Metadata) -> bool {
-        // TODO: Make max level configurable
-        metadata.level() <= Level::Trace
+        metadata.level() <= self.max_level
     }
 
     fn log(&self, record: &Record) {
@@ -56,22 +57,23 @@ impl Log for Logger {
 /// # Panics
 ///
 /// This function panics if a logger has already been installed.
-pub fn install() {
-    static LOGGER: Logger = Logger;
+pub fn install(max_level: LevelFilter) {
+    let logger = Logger { max_level };
     // NOTE: `SetLoggerError` does *not* implement `Error`
-    log::set_logger(&LOGGER).expect("logger already installed");
-    // TODO: Make max level configurable
-    log::set_max_level(LevelFilter::Trace);
+    log::set_boxed_logger(Box::new(logger)).expect("logger already installed");
+    log::set_max_level(max_level);
 }
 
 #[cfg(test)]
 mod tests {
+    use log::LevelFilter;
+
     /// Demo of the different levels.
     ///
     /// This test should be run with the `--no-capture` option.
     #[test]
     fn demo() {
-        super::install();
+        super::install(LevelFilter::Trace);
         log::error!("this is a message at the ERROR level");
         log::warn!("this is a message at the WARN level");
         log::info!("this is a message at the INFO level");
