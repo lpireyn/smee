@@ -15,5 +15,5 @@
 use smee::app::App;
 
 fn main() {
-    App::default().run()
+    App.run()
 }
