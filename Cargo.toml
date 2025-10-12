@@ -11,6 +11,18 @@ repository = "https://github.com/lpireyn/smee/"
 name = "smee"
 path = "src/main.rs"
 
+[dependencies]
+eyre = "0.6"
+is_executable = "1.0"
+log = "0.4"
+owo-colors = { version = "4.2", features = ["supports-colors"] }
+tempfile = "3.23"
+
+[dependencies.clap]
+version = "4.5"
+default-features = false
+features = ["cargo", "color", "derive", "error-context", "help", "std", "usage"]
+
 [profile.release]
 codegen-units = 1
 lto = true

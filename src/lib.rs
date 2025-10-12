@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use smee::app::App;
+pub mod app;
 
-fn main() {
-    App::default().run()
-}
+mod cli;
+mod git;
+mod logger;
