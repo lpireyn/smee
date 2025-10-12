@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+repo="$(git rev-parse --path-format=absolute --show-toplevel)"
+msg="$(git log --max-count=1 --pretty=%B)"
+notify-send --app-name=Git --urgency=normal 'Successful commit' "$msg\n<i>$repo</i>"

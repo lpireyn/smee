@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+flag="$3"
+if [ "$flag" = 1 ]; then
+    repo="$(git rev-parse --path-format=absolute --show-toplevel)"
+    branch="$(git rev-parse --abbrev-ref HEAD)"
+    notify-send --app-name=Git --urgency=normal "Switched to $branch" "<i>$repo</i>"
+fi
