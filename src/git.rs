@@ -56,27 +56,6 @@ pub fn git_hooks_path() -> Result<PathBuf> {
     git_rev_parse_path(&["--git-path", "hooks"])
 }
 
-pub fn git_config_get<K>(key: K) -> Result<Option<String>>
-where
-    K: AsRef<str>,
-{
-    let key = key.as_ref();
-    git(["config", "get", "--", key], |code, output| {
-        match code {
-            // Key found
-            0 => {
-                let res_value = git_output_to_string(output.stdout.clone())
-                    .wrap_err_with(|| format!("invalid Git configuration entry '{key}'"));
-                Some(res_value.map(Some))
-            }
-            // Key not found
-            1 => Some(Ok(None)),
-            // Error
-            _ => None,
-        }
-    })
-}
-
 pub fn git_config_get_all<K>(key: K) -> Result<Vec<String>>
 where
     K: AsRef<str>,
@@ -112,30 +91,4 @@ fn git_rev_parse_path(args: &[&str]) -> Result<PathBuf> {
         let res_path = git_output_to_string(output.stdout.clone());
         Some(res_path.map(|s| PathBuf::from(s.trim())))
     })
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // TODO: Set up a temporary test repository rather than relying on this project's repository
-
-    #[test]
-    fn test_git_hooks_path() {
-        git_hooks_path().unwrap();
-    }
-
-    #[test]
-    fn test_git_config_get_found() {
-        assert!(git_config_get("user.name").unwrap().is_some());
-    }
-
-    #[test]
-    fn test_git_config_get_not_found() {
-        assert!(
-            git_config_get("this-entry-does-not-exist")
-                .unwrap()
-                .is_none()
-        );
-    }
 }
