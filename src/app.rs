@@ -34,10 +34,8 @@ use is_executable::IsExecutable;
 use log::LevelFilter;
 
 use crate::cli::HookArgs;
-use crate::cli::InstallArgs;
 use crate::cli::SmeeCommand;
 use crate::cli::SmeeSubcommand;
-use crate::cli::UninstallArgs;
 use crate::git;
 use crate::logger;
 
@@ -65,8 +63,8 @@ impl App {
         logger::init(max_level);
         // Run subcommand
         if let Err(err) = match command.subcommand {
-            SmeeSubcommand::Install(args) => self.run_install(&args),
-            SmeeSubcommand::Uninstall(args) => self.run_uninstall(&args),
+            SmeeSubcommand::Install => self.run_install(),
+            SmeeSubcommand::Uninstall => self.run_uninstall(),
             SmeeSubcommand::Hook(args) => self.run_hook(&args),
         } {
             // Report error and exit with 1
@@ -75,7 +73,7 @@ impl App {
         }
     }
 
-    fn run_install(self, args: &InstallArgs) -> Result<()> {
+    fn run_install(self) -> Result<()> {
         // Determine hooks path
         let hooks_path = git::git_hooks_path()?;
         fs::create_dir_all(&hooks_path)
@@ -122,7 +120,7 @@ impl App {
         Ok(())
     }
 
-    fn run_uninstall(self, args: &UninstallArgs) -> Result<()> {
+    fn run_uninstall(self) -> Result<()> {
         // Determine hooks path
         let hooks_path = git::git_hooks_path()?;
         // Uninstall hooks

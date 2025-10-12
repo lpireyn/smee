@@ -37,22 +37,16 @@ pub struct SmeeCommand {
 pub enum SmeeSubcommand {
     /// Install Smee in a Git repository.
     #[command()]
-    Install(InstallArgs),
+    Install,
 
     /// Uninstall Smee from a Git repository.
     #[command()]
-    Uninstall(UninstallArgs),
+    Uninstall,
 
     /// Run a hook with Smee.
     #[command()]
     Hook(HookArgs),
 }
-
-#[derive(Args, Debug)]
-pub struct InstallArgs {}
-
-#[derive(Args, Debug)]
-pub struct UninstallArgs {}
 
 #[derive(Args, Debug)]
 pub struct HookArgs {
