@@ -5,12 +5,14 @@
 **Smee** is a *Git hooks manager*.
 
 > Mr. Smee is Captain Hook's git.
+>
 > Smee is the Captain of Git hooks!
 
 ## Features
 
-- Configured entirely with `git config` &mdash; no configuration file!
+- Supports *project hooks* and *user hooks*
 - Only one command: `smee` &mdash; no dependencies!
+- Configured entirely with `git config` &mdash; no configuration file!
 - Written in Rust :crab: &mdash; small and blazingly fast!
 
 ## Documentation
