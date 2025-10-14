@@ -1,5 +1,7 @@
 # Smee
 
+<img src="assets/mr-smee.png" alt="Mr. Smee (Disney, 1953)" width="151" height="240" align="right"/>
+
 **Smee** is a *Git hooks manager*.
 
 > Mr. Smee is Captain Hook's git.
