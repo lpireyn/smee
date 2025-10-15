@@ -1,0 +1,163 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+
+permissions:
+  contents: write
+
+jobs:
+
+  metadata:
+    name: Metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Extract Cargo metadata
+        id: crate_metadata
+        run: >
+          cargo metadata --format-version=1 --no-deps |
+          jq --raw-output '
+          "name=" + .packages[0].name + "\n" +
+          "version=" + .packages[0].version + "\n"
+          ' | tee -a $GITHUB_OUTPUT
+    outputs:
+      name: ${{ steps.crate_metadata.outputs.name }}
+      version: ${{ steps.crate_metadata.outputs.version }}
+
+  create-release:
+    name: Create release
+    needs: [metadata]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Check tag vs. metadata version
+        run: |
+          if [ '${{ github.ref_name }}' != "${{ needs.metadata.outputs.version }}" ]; then
+            echo "Tag '${{ github.ref_name }}' is different from metadata version '${{ needs.metadata.outputs.version }}'" >&2
+            exit 1
+          fi
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create "${{ needs.metadata.outputs.version }}"
+          --title "${{ needs.metadata.outputs.version }}"
+          --draft
+          --verify-tag
+
+  build-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            toolchain: stable
+            use-cross: false
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: armv7-unknown-linux-gnueabihf
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: armv7-unknown-linux-musleabi
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: armv7-unknown-linux-musleabihf
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: i686-unknown-freebsd
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: i686-unknown-linux-gnu
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: i686-unknown-linux-musl
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: powerpc64-unknown-linux-gnu
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: riscv64gc-unknown-linux-gnu
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            toolchain: stable
+            use-cross: false
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            toolchain: stable
+            use-cross: true
+    name: Build binary - ${{ matrix.target }}
+    needs: [metadata, create-release]
+    runs-on: ${{ matrix.os }}
+    env:
+      CARGO: cargo
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          target: ${{ matrix.target }}
+      - name: Install Cross
+        if: matrix.use-cross
+        run: |
+          cross_version=0.2.5
+          cross_archive=cross-x86_64-unknown-linux-musl.tar.gz
+          dir="$RUNNER_TEMP/cross"
+          mkdir -p "$dir"
+          echo "$dir" >> $GITHUB_PATH
+          cd "$dir"
+          curl -LO "https://github.com/cross-rs/cross/releases/download/v$cross_version/$cross_archive"
+          tar xf "$cross_archive"
+          echo "CARGO=cross" >> $GITHUB_ENV
+      - name: Build binary
+        run: |
+          $CARGO build --release --locked --target ${{ matrix.target }}
+      - name: Create archive
+        id: archive
+        run: |
+          archive='${{ needs.metadata.outputs.name }}-${{ needs.metadata.outputs.version }}-${{ matrix.target }}'
+          mkdir -p "$archive"
+          cp "target/${{ matrix.target }}/release/${{ needs.metadata.outputs.name }}" "$archive"
+          cp README.md LICENSE CHANGELOG.md "$archive"
+          archive_file="${archive}.tar.gz"
+          archive_checksum="${archive_file}.sha256"
+          tar czf "$archive_file" "$archive"
+          shasum -a 256 "$archive_file" > "$archive_checksum"
+          echo "archive_file=$archive_file" >> $GITHUB_OUTPUT
+          echo "archive_checksum=$archive_checksum" >> $GITHUB_OUTPUT
+      - name: Upload archive to GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release upload "${{ needs.metadata.outputs.version }}"
+          "${{ steps.archive.outputs.archive_file }}"
+          "${{ steps.archive.outputs.archive_checksum }}"
