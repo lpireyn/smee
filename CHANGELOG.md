@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `--color` option to `smee` command (#1)
+- Added support for the `SMEE_DISABLE` environment variable to disable the `hook` subcommand (#2)
 
 ## [0.1.0] - 2025-10-16
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::env;
 use std::fs;
 use std::fs::File;
 use std::fs::Permissions;
@@ -174,6 +175,11 @@ impl App {
     fn run_hook(self, args: &HookArgs) -> Result<()> {
         let event = &args.event;
         log::debug!("running {event} hooks");
+        // Short-circuit if Smee is disabled
+        if env::var_os(SMEE_DISABLE).is_some() {
+            log::warn!("Smee disabled ({SMEE_DISABLE} environment variable set)");
+            return Ok(());
+        }
         let hooks = collect_hooks(event)?;
         if hooks.is_empty() {
             // No hooks, short-circuit
@@ -251,6 +257,9 @@ const HOOKS: [&str; 21] = [
     "p4-pre-submit",
     "post-index-change",
 ];
+
+/// Name of the environment variable set to disable Smee.
+const SMEE_DISABLE: &str = "SMEE_DISABLE";
 
 /// Text that indicates a hook is managed by Smee.
 const HOOK_BEACON: &str = "This file is managed by Smee. Please do not modify it.";
