@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#![allow(dead_code)]
+
 use std::path::PathBuf;
 use std::process;
 
@@ -19,6 +21,21 @@ use eyre::OptionExt;
 use eyre::Result;
 use eyre::WrapErr;
 use eyre::eyre;
+
+/// Git configuration entry value type.
+///
+/// [Reference](https://git-scm.com/docs/git-config#Documentation/git-config.txt---typetype)
+#[derive(Clone, Copy, Debug, Default)]
+pub enum ValueType {
+    #[default]
+    String,
+    Bool,
+    Int,
+    BoolOrInt,
+    Path,
+    ExpiryDate,
+    Color,
+}
 
 pub fn git<A, S, F, T>(args: A, mapper: F) -> Result<T>
 where
@@ -56,46 +73,66 @@ pub fn git_hooks_path() -> Result<PathBuf> {
     git_rev_parse_path(&["--git-path", "hooks"])
 }
 
-pub fn git_config_get<K>(key: K) -> Result<Option<String>>
+pub fn git_config_get<K>(key: K, value_type: ValueType) -> Result<Option<String>>
 where
     K: AsRef<str>,
 {
     let key = key.as_ref();
-    git(["config", "get", "--", key], |code, output| {
-        match code {
-            // Key found
-            0 => {
-                let res_value = git_output_to_string(output.stdout.clone())
-                    .wrap_err_with(|| format!("invalid Git configuration entry '{key}'"));
-                Some(res_value.map(|value| Some(value.trim().to_string())))
+    git(
+        ["config", "get", value_type.git_option(), "--", key],
+        |code, output| {
+            match code {
+                // Key found
+                0 => {
+                    let res_value = git_output_to_string(output.stdout.clone())
+                        .wrap_err_with(|| format!("invalid Git configuration entry '{key}'"));
+                    Some(res_value.map(|value| Some(value.trim().to_string())))
+                }
+                // Key not found
+                1 => Some(Ok(None)),
+                // Error
+                _ => None,
             }
-            // Key not found
-            1 => Some(Ok(None)),
-            // Error
-            _ => None,
-        }
-    })
+        },
+    )
 }
 
-pub fn git_config_get_all<K>(key: K) -> Result<Vec<String>>
+pub fn git_config_get_all<K>(key: K, value_type: ValueType) -> Result<Vec<String>>
 where
     K: AsRef<str>,
 {
     let key = key.as_ref();
-    git(["config", "get", "--all", "--", key], |code, output| {
-        match code {
-            // Key found
-            0 => {
-                let res_values = git_output_to_string(output.stdout.clone())
-                    .wrap_err_with(|| format!("invalid Git configuration entry '{key}'"));
-                Some(res_values.map(|s| s.lines().map(|s| s.to_string()).collect()))
+    git(
+        ["config", "get", "--all", value_type.git_option(), "--", key],
+        |code, output| {
+            match code {
+                // Key found
+                0 => {
+                    let res_values = git_output_to_string(output.stdout.clone())
+                        .wrap_err_with(|| format!("invalid Git configuration entry '{key}'"));
+                    Some(res_values.map(|s| s.lines().map(|s| s.to_string()).collect()))
+                }
+                // Key not found
+                1 => Some(Ok(Vec::new())),
+                // Error
+                _ => None,
             }
-            // Key not found
-            1 => Some(Ok(Vec::new())),
-            // Error
-            _ => None,
+        },
+    )
+}
+
+impl ValueType {
+    fn git_option(&self) -> &'static str {
+        match self {
+            Self::String => "--no-type",
+            Self::Bool => "--type=bool",
+            Self::Int => "--type=int",
+            Self::BoolOrInt => "--type=bool-or-int",
+            Self::Path => "--type=path",
+            Self::ExpiryDate => "--type=expiry-date",
+            Self::Color => "--type=color",
         }
-    })
+    }
 }
 
 fn git_output_to_string(output: Vec<u8>) -> Result<String> {
