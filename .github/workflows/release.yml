@@ -139,15 +139,17 @@ jobs:
           tar xf "$cross_archive"
           echo "CARGO=cross" >> $GITHUB_ENV
       - name: Build binary
-        run: |
-          $CARGO build --package smee --release --locked --target ${{ matrix.target }}
+        run: $CARGO build --package smee --release --locked --target ${{ matrix.target }}
+      - name: Generate man pages
+        run: cargo mangen
       - name: Create archive
         id: archive
         run: |
           archive='${{ needs.metadata.outputs.name }}-${{ needs.metadata.outputs.version }}-${{ matrix.target }}'
-          mkdir -p "$archive"
+          mkdir -p "$archive"/doc
           cp "target/${{ matrix.target }}/release/${{ needs.metadata.outputs.name }}" "$archive"
           cp README.md LICENSE CHANGELOG.md "$archive"
+          cp target/man/* "$archive"/doc
           archive_file="${archive}.tar.gz"
           archive_checksum="${archive_file}.sha256"
           tar czf "$archive_file" "$archive"
