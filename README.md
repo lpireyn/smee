@@ -104,6 +104,9 @@ SMEE_DISABLE=1 git commit -a -m 'wip'
 
 **Note:** The actual value of the variable doesn't matter, as long as it is set.
 
+**Note:** Some Git commands have a `--no-verify` option that makes Git *not* run the hooks.
+This also disables Smee.
+
 ### Stop using Smee
 
 If you ever want to stop using Smee in a repository, run the following command in that repository:
