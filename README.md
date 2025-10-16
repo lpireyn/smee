@@ -8,6 +8,7 @@
 >
 > Smee is the Captain of Git hooks!
 
+[![GitHub Release](https://img.shields.io/github/v/release/lpireyn/smee?style=for-the-badge&logo=github&color=blue)](https://github.com/lpireyn/smee/releases/latest)
 [![GitHub CI Status](https://img.shields.io/github/actions/workflow/status/lpireyn/smee/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI)](https://github.com/lpireyn/smee/actions/workflows/ci.yml?query=branch%3Amain)
 ![Written in Rust](https://img.shields.io/badge/Written_in-Rust-orange?style=for-the-badge&logo=rust)
 [![License](https://img.shields.io/github/license/lpireyn/smee?style=for-the-badge&logo=apache)](LICENSE)
