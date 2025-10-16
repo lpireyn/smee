@@ -61,6 +61,8 @@ impl App {
         } else {
             LevelFilter::Info
         };
+        // Initialize logger
+        logger::init(max_level);
         // Apply color policy
         match command.color {
             ColorPolicy::Auto => {
@@ -73,8 +75,6 @@ impl App {
                 owo_colors::set_override(false);
             }
         }
-        // Initialize logger
-        logger::init(max_level);
         // Run subcommand
         if let Err(err) = match command.subcommand {
             SmeeSubcommand::Install => self.run_install(),
