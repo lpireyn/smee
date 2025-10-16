@@ -1,0 +1,20 @@
+[package]
+name = "smee"
+version = "0.2.0"
+description = "Smee is a Git hooks manager."
+edition.workspace = true
+readme = "../../README.md"
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "smee"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+eyre = "0.6"
+is_executable = "1.0"
+log = { version = "0.4", features = ["std"] }
+owo-colors = { version = "4.2", features = ["supports-colors"] }
+tempfile = "3.23"

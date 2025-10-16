@@ -13,7 +13,7 @@
 // limitations under the License.
 
 pub mod app;
+pub mod cli;
 
-mod cli;
 mod git;
 mod logger;
