@@ -7,6 +7,14 @@ edition = "2024"
 license = "Apache-2.0"
 repository = "https://github.com/lpireyn/smee/"
 
+[workspace.dependencies]
+smee = { path = "crates/smee" }
+
+[workspace.dependencies.clap]
+version = "4.5"
+default-features = false
+features = ["cargo", "color", "derive", "error-context", "help", "std", "usage"]
+
 [profile.release]
 codegen-units = 1
 lto = true

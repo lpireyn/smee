@@ -12,6 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-fn main() {
-    println!("Hello xtask-mangen!");
+use std::error::Error;
+use std::fs;
+use std::path::PathBuf;
+
+use clap::CommandFactory;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let command = smee::cli::SmeeCommand::command();
+    let out_dir = PathBuf::from("target/man");
+    fs::create_dir_all(&out_dir)?;
+    clap_mangen::generate_to(command, &out_dir)?;
+    Ok(())
 }
