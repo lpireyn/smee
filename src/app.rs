@@ -33,6 +33,7 @@ use eyre::bail;
 use is_executable::IsExecutable;
 use log::LevelFilter;
 
+use crate::cli::ColorPolicy;
 use crate::cli::HookArgs;
 use crate::cli::SmeeCommand;
 use crate::cli::SmeeSubcommand;
@@ -59,6 +60,18 @@ impl App {
         } else {
             LevelFilter::Info
         };
+        // Apply color policy
+        match command.color {
+            ColorPolicy::Auto => {
+                owo_colors::unset_override();
+            }
+            ColorPolicy::Always => {
+                owo_colors::set_override(true);
+            }
+            ColorPolicy::Never => {
+                owo_colors::set_override(false);
+            }
+        }
         // Initialize logger
         logger::init(max_level);
         // Run subcommand

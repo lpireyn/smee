@@ -15,6 +15,7 @@
 use clap::Args;
 use clap::Parser;
 use clap::Subcommand;
+use clap::ValueEnum;
 
 /// Smee, a Git hooks manager.
 #[derive(Debug, Parser)]
@@ -28,8 +29,41 @@ pub struct SmeeCommand {
     #[arg(conflicts_with = "quiet", long, short = 'v')]
     pub verbose: bool,
 
+    /// Specify when to use colors in printed messages.
+    ///
+    /// [no value: always]
+    // NOTE: This option is not global so as not to interfere with the open arguments of the `hook` subcommand
+    // TODO: Make Clap document the `default_missing_value` rather than mimicking it with `[no value: ...]`
+    #[arg(
+        default_missing_value = "always",
+        default_value = "auto",
+        long,
+        num_args = 0..=1,
+        require_equals = true,
+        value_name = "WHEN"
+    )]
+    pub color: ColorPolicy,
+
     #[command(subcommand)]
     pub subcommand: SmeeSubcommand,
+}
+
+/// Color policy.
+#[derive(Clone, Copy, Debug, Default, ValueEnum)]
+pub enum ColorPolicy {
+    /// Use colors for printed messages
+    /// if the `NO_COLOR` environment variable is not set
+    /// and the standard output is a TTY.
+    #[default]
+    Auto,
+
+    /// Use colors for printed messages.
+    #[value(aliases = ["on", "yes"])]
+    Always,
+
+    /// Do not use colors for printed messages.
+    #[value(aliases = ["off", "no"])]
+    Never,
 }
 
 #[derive(Debug, Subcommand)]
