@@ -142,14 +142,17 @@ jobs:
         run: $CARGO build --package smee --release --locked --target ${{ matrix.target }}
       - name: Generate man pages
         run: cargo mangen
+      - name: Generate shell completions
+        run: cargo complete
       - name: Create archive
         id: archive
         run: |
           archive='${{ needs.metadata.outputs.name }}-${{ needs.metadata.outputs.version }}-${{ matrix.target }}'
-          mkdir -p "$archive"/doc
+          mkdir -p "$archive"/{complete,doc}
           cp "target/${{ matrix.target }}/release/${{ needs.metadata.outputs.name }}" "$archive"
           cp README.md LICENSE CHANGELOG.md "$archive"
           cp target/man/* "$archive"/doc
+          cp target/complete/* "$archive"/complete
           archive_file="${archive}.tar.gz"
           archive_checksum="${archive_file}.sha256"
           tar czf "$archive_file" "$archive"
