@@ -12,6 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-fn main() {
-    println!("Hello xtask-complete!");
+use std::error::Error;
+use std::fs;
+use std::path::PathBuf;
+
+use clap::CommandFactory;
+use clap::ValueEnum;
+use clap_complete::Shell;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut command = smee::cli::SmeeCommand::command();
+    let out_dir = PathBuf::from("target/complete");
+    fs::create_dir_all(&out_dir)?;
+    for &shell in Shell::value_variants() {
+        clap_complete::generate_to(shell, &mut command, "smee", &out_dir)?;
+    }
+    Ok(())
 }
