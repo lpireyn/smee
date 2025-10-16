@@ -1,0 +1,2 @@
+[alias]
+mangen = "run --package xtask-mangen --"
