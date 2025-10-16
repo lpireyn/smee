@@ -140,7 +140,7 @@ jobs:
           echo "CARGO=cross" >> $GITHUB_ENV
       - name: Build binary
         run: |
-          $CARGO build --release --locked --target ${{ matrix.target }}
+          $CARGO build --package smee --release --locked --target ${{ matrix.target }}
       - name: Create archive
         id: archive
         run: |
