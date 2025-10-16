@@ -56,6 +56,27 @@ pub fn git_hooks_path() -> Result<PathBuf> {
     git_rev_parse_path(&["--git-path", "hooks"])
 }
 
+pub fn git_config_get<K>(key: K) -> Result<Option<String>>
+where
+    K: AsRef<str>,
+{
+    let key = key.as_ref();
+    git(["config", "get", "--", key], |code, output| {
+        match code {
+            // Key found
+            0 => {
+                let res_value = git_output_to_string(output.stdout.clone())
+                    .wrap_err_with(|| format!("invalid Git configuration entry '{key}'"));
+                Some(res_value.map(|value| Some(value.trim().to_string())))
+            }
+            // Key not found
+            1 => Some(Ok(None)),
+            // Error
+            _ => None,
+        }
+    })
+}
+
 pub fn git_config_get_all<K>(key: K) -> Result<Vec<String>>
 where
     K: AsRef<str>,

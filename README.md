@@ -114,6 +114,16 @@ smee uninstall
 
 If there were existing hooks when Smee was installed, they will be restored.
 
+### Configuration
+
+Smee is configured entirely with the Git configuration, under the `smee` section.
+
+| Key                | Description                                                                        |
+|--------------------|------------------------------------------------------------------------------------|
+| `smee.dirs`        | Directories where Smee looks for user hooks (multiple values)                      |
+| `smee.hooks`       | Active user hooks (multiple values)                                                |
+| `smee.maxLogLevel` | Maximum log level (valid values: `OFF`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`) |
+
 ## Changelog
 
 See [CHANGELOG](CHANGELOG.md).

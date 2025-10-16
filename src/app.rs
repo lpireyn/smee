@@ -24,6 +24,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process;
 use std::process::Stdio;
+use std::str::FromStr;
 
 use clap::Parser;
 use eyre::OptionExt;
@@ -55,11 +56,24 @@ impl App {
         let command = SmeeCommand::parse();
         // Determine max log level
         let max_level = if command.quiet {
+            // The `--quiet` option was used
             LevelFilter::Warn
         } else if command.verbose {
+            // The `--verbose` option was used
             LevelFilter::Debug
         } else {
-            LevelFilter::Info
+            const KEY_MAX_LOG_LEVEL: &str = "smee.maxLogLevel";
+            if let Ok(opt_value) = git::git_config_get(KEY_MAX_LOG_LEVEL)
+                && let Some(value) = opt_value
+            {
+                // The Git configuration entry is present
+                // NOTE: We fallback on the default level if the value cannot be parsed,
+                // partly to be nice and partly because we cannot log an error yet
+                LevelFilter::from_str(&value).unwrap_or(LevelFilter::Info)
+            } else {
+                // Default level
+                LevelFilter::Info
+            }
         };
         // Initialize logger
         logger::init(max_level);
