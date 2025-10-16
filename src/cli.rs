@@ -49,7 +49,7 @@ pub struct SmeeCommand {
 }
 
 /// Color policy.
-#[derive(Clone, Copy, Debug, Default, ValueEnum)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, ValueEnum)]
 pub enum ColorPolicy {
     /// Use colors for printed messages
     /// if the `NO_COLOR` environment variable is not set
@@ -77,9 +77,37 @@ pub enum SmeeSubcommand {
     #[command()]
     Uninstall,
 
+    /// Activate a user hook.
+    #[command()]
+    Activate(ActivateArgs),
+
+    /// Deactivate a user hook.
+    #[command()]
+    Deactivate(DeactivateArgs),
+
     /// Run a hook with Smee.
     #[command()]
     Hook(HookArgs),
+}
+
+#[derive(Args, Debug)]
+pub struct ActivateArgs {
+    #[command(flatten)]
+    pub scope: HookScopeArgs,
+
+    /// Hook(s) to activate.
+    #[arg(required = true, value_name = "HOOK")]
+    pub hooks: Vec<String>,
+}
+
+#[derive(Args, Debug)]
+pub struct DeactivateArgs {
+    #[command(flatten)]
+    pub scope: HookScopeArgs,
+
+    /// Hook(s) to deactivate.
+    #[arg(required = true, value_name = "HOOK")]
+    pub hooks: Vec<String>,
 }
 
 #[derive(Args, Debug)]
@@ -91,4 +119,15 @@ pub struct HookArgs {
     /// Arguments.
     #[arg(value_name = "ARGS")]
     pub args: Vec<String>,
+}
+
+#[derive(Args, Debug)]
+pub struct HookScopeArgs {
+    /// Apply to the local project only (default).
+    #[arg(conflicts_with = "global", long)]
+    pub local: bool,
+
+    /// Apply to all projects.
+    #[arg(conflicts_with = "local", long)]
+    pub global: bool,
 }

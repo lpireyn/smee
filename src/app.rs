@@ -35,13 +35,19 @@ use eyre::bail;
 use is_executable::IsExecutable;
 use log::LevelFilter;
 
+use crate::cli::ActivateArgs;
 use crate::cli::ColorPolicy;
+use crate::cli::DeactivateArgs;
 use crate::cli::HookArgs;
+use crate::cli::HookScopeArgs;
 use crate::cli::SmeeCommand;
 use crate::cli::SmeeSubcommand;
+use crate::git::Scope;
 use crate::git::ValueType;
+use crate::git::git_config_add;
 use crate::git::git_config_get;
 use crate::git::git_config_get_all;
+use crate::git::git_config_remove;
 use crate::git::git_hooks_path;
 use crate::git::git_work_tree;
 use crate::logger;
@@ -97,6 +103,8 @@ impl App {
         if let Err(err) = match command.subcommand {
             SmeeSubcommand::Install => self.run_install(),
             SmeeSubcommand::Uninstall => self.run_uninstall(),
+            SmeeSubcommand::Activate(args) => self.run_activate(&args),
+            SmeeSubcommand::Deactivate(args) => self.run_deactivate(&args),
             SmeeSubcommand::Hook(args) => self.run_hook(&args),
         } {
             // Report error and exit with 1
@@ -190,6 +198,22 @@ impl App {
         Ok(())
     }
 
+    fn run_activate(self, args: &ActivateArgs) -> Result<()> {
+        let scope = to_git_scope(&args.scope);
+        for hook in &args.hooks {
+            activate_hook(hook, scope)?;
+        }
+        Ok(())
+    }
+
+    fn run_deactivate(self, args: &DeactivateArgs) -> Result<()> {
+        let scope = to_git_scope(&args.scope);
+        for hook in &args.hooks {
+            deactivate_hook(hook, scope)?;
+        }
+        Ok(())
+    }
+
     fn run_hook(self, args: &HookArgs) -> Result<()> {
         let event = &args.event;
         log::debug!("running {event} hooks");
@@ -276,6 +300,10 @@ const HOOKS: [&str; 21] = [
     "post-index-change",
 ];
 
+const KEY_HOOKS_NAMES: &str = "smee.hooks";
+
+const KEY_HOOKS_DIRS: &str = "smee.dirs";
+
 /// Name of the environment variable set to disable Smee.
 const SMEE_DISABLE: &str = "SMEE_DISABLE";
 
@@ -303,6 +331,26 @@ where
     let contents = fs::read_to_string(file)
         .wrap_err_with(|| format!("cannot read file {}", file.display()))?;
     Ok(contents.contains(HOOK_BEACON))
+}
+
+fn to_git_scope(hook_scope_args: &HookScopeArgs) -> Scope {
+    if hook_scope_args.global {
+        Scope::Global
+    } else {
+        Scope::Local
+    }
+}
+
+fn activate_hook(hook: &str, scope: Scope) -> Result<()> {
+    git_config_add(KEY_HOOKS_NAMES, hook, ValueType::String, false, scope)?;
+    log::info!("hook {hook} activated in {scope} scope");
+    Ok(())
+}
+
+fn deactivate_hook(hook: &str, scope: Scope) -> Result<()> {
+    git_config_remove(KEY_HOOKS_NAMES, hook, scope)?;
+    log::info!("hook {hook} deactivated in {scope} scope");
+    Ok(())
 }
 
 fn collect_hooks(event: &str) -> Result<Vec<Hook>> {
@@ -344,8 +392,6 @@ fn collect_project_hooks(event: &str) -> Result<Vec<Hook>> {
 }
 
 fn collect_user_hooks(event: &str) -> Result<Vec<Hook>> {
-    const KEY_HOOKS_NAMES: &str = "smee.hooks";
-    const KEY_HOOKS_DIRS: &str = "smee.dirs";
     let hooks_names = git_config_get_all(KEY_HOOKS_NAMES, ValueType::String)?;
     if hooks_names.is_empty() {
         return Ok(Vec::new());

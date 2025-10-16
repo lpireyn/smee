@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `activate` subcommand to `smee` command (#4)
+- Added `deactivate` subcommand to `smee` command (#4)
 - Added `--color` option to `smee` command (#1)
 - Added support for the `SMEE_DISABLE` environment variable to disable the `hook` subcommand (#2)
 - Added support for the `smee.maxLogLevel` Git configuration entry (#3)
