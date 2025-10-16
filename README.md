@@ -93,6 +93,17 @@ Since Smee is configured entirely within the Git configuration,
 you may want to edit the corresponding files directly rather than using the `git config` command.
 This can be useful to reorder the active hooks, for example.
 
+### Disable Smee
+
+Sometimes you need to disable Smee for an operation (e.g., you're creating a temporary commit with changes that don't compile).
+You can do that by setting the `SMEE_DISABLE` environment variable:
+
+```shell
+SMEE_DISABLE=1 git commit -a -m 'wip'
+```
+
+**Note:** The actual value of the variable doesn't matter, as long as it is set.
+
 ### Stop using Smee
 
 If you ever want to stop using Smee in a repository, run the following command in that repository:
