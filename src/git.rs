@@ -14,6 +14,8 @@
 
 #![allow(dead_code)]
 
+use std::fmt::Display;
+use std::fmt::Formatter;
 use std::path::PathBuf;
 use std::process;
 
@@ -22,10 +24,23 @@ use eyre::Result;
 use eyre::WrapErr;
 use eyre::eyre;
 
+/// Git configuration scope.
+///
+/// [Reference](https://git-scm.com/docs/git-config)
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum Scope {
+    System,
+    Global,
+    #[default]
+    Local,
+    Worktree,
+    // NOTE: The `file` scope is not currently supported
+}
+
 /// Git configuration entry value type.
 ///
 /// [Reference](https://git-scm.com/docs/git-config#Documentation/git-config.txt---typetype)
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum ValueType {
     #[default]
     String,
@@ -35,6 +50,18 @@ pub enum ValueType {
     Path,
     ExpiryDate,
     Color,
+}
+
+impl Display for Scope {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::System => "system",
+            Self::Global => "global",
+            Self::Local => "local",
+            Self::Worktree => "worktree",
+        };
+        write!(f, "{s}")
+    }
 }
 
 pub fn git<A, S, F, T>(args: A, mapper: F) -> Result<T>
@@ -119,6 +146,113 @@ where
             }
         },
     )
+}
+
+pub fn git_config_set<K, V>(key: K, value: V, value_type: ValueType, scope: Scope) -> Result<()>
+where
+    K: AsRef<str>,
+    V: AsRef<str>,
+{
+    let key = key.as_ref();
+    let value = value.as_ref();
+    git(
+        [
+            "config",
+            "set",
+            value_type.git_option(),
+            scope.git_option(),
+            "--",
+            key,
+            value,
+        ],
+        |code, _| {
+            match code {
+                // Success
+                0 => Some(Ok(())),
+                // Error
+                _ => None,
+            }
+        },
+    )
+}
+
+pub fn git_config_add<K, V>(
+    key: K,
+    value: V,
+    value_type: ValueType,
+    allow_duplicate: bool,
+    scope: Scope,
+) -> Result<()>
+where
+    K: AsRef<str>,
+    V: AsRef<str>,
+{
+    let key = key.as_ref();
+    let value = value.as_ref();
+    let mut args = Vec::<&str>::with_capacity(10);
+    args.push("config");
+    args.push("set");
+    args.push(value_type.git_option());
+    if allow_duplicate {
+        args.push("--append");
+    } else {
+        // Replace entries with the same value, if any
+        args.push("--value");
+        args.push(value);
+        args.push("--fixed-value");
+    }
+    args.push(scope.git_option());
+    args.push("--");
+    args.push(key);
+    args.push(value);
+    git(&args, |code, _| {
+        match code {
+            // Success
+            0 => Some(Ok(())),
+            // Error
+            _ => None,
+        }
+    })
+}
+
+pub fn git_config_remove<K, V>(key: K, value: V, scope: Scope) -> Result<()>
+where
+    K: AsRef<str>,
+    V: AsRef<str>,
+{
+    let key = key.as_ref();
+    let value = value.as_ref();
+    git(
+        [
+            "config",
+            "unset",
+            "--value",
+            value,
+            "--fixed-value",
+            scope.git_option(),
+            "--",
+            key,
+        ],
+        |code, _| {
+            match code {
+                // Key found or key not found
+                0 | 5 => Some(Ok(())),
+                // Error
+                _ => None,
+            }
+        },
+    )
+}
+
+impl Scope {
+    fn git_option(&self) -> &'static str {
+        match self {
+            Self::System => "--system",
+            Self::Global => "--global",
+            Self::Local => "--local",
+            Self::Worktree => "--worktree",
+        }
+    }
 }
 
 impl ValueType {

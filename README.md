@@ -71,27 +71,27 @@ Similarly, you deregister a hooks directory with:
 git config unset --global --value=DIRECTORY smee.dirs
 ```
 
-Once Smee knows where to look for user hooks, you can activate a specific hook with:
+Once Smee knows where to look for user hooks, you can activate one or more hooks with:
 
 ```shell
-git config set SCOPE --append smee.hooks HOOK
+smee activate [SCOPE] HOOK...
 ```
 
-where `SCOPE` is either:
+where `SCOPE` is optional and is either:
 
-- `--global` to activate the hook for all projects
-- `--local` to activate the hook only for the local repository
+- `--local` to activate the hook in the local project only (the default)
+- `--global` to activate the hook in all projects
 
-Similarly, you deactivate a hook with:
+Similarly, you deactivate one or more hooks with:
 
 ```shell
-git config unset SCOPE --value=HOOK smee.hooks
+smee deactivate [SCOPE] HOOK...
 ```
 
 **Note:**
 Since Smee is configured entirely within the Git configuration,
-you may want to edit the corresponding files directly rather than using the `git config` command.
-This can be useful to reorder the active hooks, for example.
+you may want to edit the corresponding files directly.
+This can be useful to examine or reorder the active hooks, for example.
 
 ### Disable Smee
 
