@@ -39,7 +39,11 @@ use crate::cli::ColorPolicy;
 use crate::cli::HookArgs;
 use crate::cli::SmeeCommand;
 use crate::cli::SmeeSubcommand;
-use crate::git;
+use crate::git::ValueType;
+use crate::git::git_config_get;
+use crate::git::git_config_get_all;
+use crate::git::git_hooks_path;
+use crate::git::git_work_tree;
 use crate::logger;
 
 /// Smee application.
@@ -63,7 +67,7 @@ impl App {
             LevelFilter::Debug
         } else {
             const KEY_MAX_LOG_LEVEL: &str = "smee.maxLogLevel";
-            if let Ok(opt_value) = git::git_config_get(KEY_MAX_LOG_LEVEL)
+            if let Ok(opt_value) = git_config_get(KEY_MAX_LOG_LEVEL, ValueType::String)
                 && let Some(value) = opt_value
             {
                 // The Git configuration entry is present
@@ -103,7 +107,7 @@ impl App {
 
     fn run_install(self) -> Result<()> {
         // Determine hooks path
-        let hooks_path = git::git_hooks_path()?;
+        let hooks_path = git_hooks_path()?;
         fs::create_dir_all(&hooks_path)
             .wrap_err_with(|| format!("cannot create hooks path {}", hooks_path.display()))?;
         // Install hooks
@@ -150,7 +154,7 @@ impl App {
 
     fn run_uninstall(self) -> Result<()> {
         // Determine hooks path
-        let hooks_path = git::git_hooks_path()?;
+        let hooks_path = git_hooks_path()?;
         // Uninstall hooks
         let total_count = HOOKS.len();
         let mut removed_count = 0usize;
@@ -309,7 +313,7 @@ fn collect_hooks(event: &str) -> Result<Vec<Hook>> {
 
 fn collect_project_hooks(event: &str) -> Result<Vec<Hook>> {
     let mut hooks = Vec::<Hook>::new();
-    let work_tree = git::git_work_tree()?;
+    let work_tree = git_work_tree()?;
     let base_dir = work_tree.join(".config").join("smee").join("hooks");
     if !base_dir.is_dir() {
         return Ok(hooks);
@@ -342,11 +346,11 @@ fn collect_project_hooks(event: &str) -> Result<Vec<Hook>> {
 fn collect_user_hooks(event: &str) -> Result<Vec<Hook>> {
     const KEY_HOOKS_NAMES: &str = "smee.hooks";
     const KEY_HOOKS_DIRS: &str = "smee.dirs";
-    let hooks_names = git::git_config_get_all(KEY_HOOKS_NAMES)?;
+    let hooks_names = git_config_get_all(KEY_HOOKS_NAMES, ValueType::String)?;
     if hooks_names.is_empty() {
         return Ok(Vec::new());
     }
-    let hooks_dirs = git::git_config_get_all(KEY_HOOKS_DIRS)?
+    let hooks_dirs = git_config_get_all(KEY_HOOKS_DIRS, ValueType::Path)?
         .into_iter()
         .map(PathBuf::from)
         .collect::<Vec<_>>();
