@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+is_valid_type() {
+    local -r value="$1"
+    case "$value" in
+        build|chore|ci|docs|feat|fix|perf|refactor|style|test) true ;;
+        *) false ;;
+    esac
+}
+
+is_valid_scope() {
+    local -r value="$1"
+    [[ -n "$value" ]]
+}
+
+is_valid_description() {
+    local -r value="$1"
+    [[ -n "$value" ]]
+}
+
+fail() {
+    printf '%b\n' "$1" >&2
+    exit "${2:-1}"
+}
+
+set -u
+
+declare -r file="$1"
+declare -a lines
+if ! mapfile -t lines < "$file"; then
+    fail "Cannot read commit message file '$file'" 2
+fi
+declare -r line1="${lines[0]}"
+if [[ "$line1" =~ ^(amend|fixup|squash)!\ .*$ ]]; then
+    exit
+fi
+if ! [[ "$line1" =~ ^([a-z]+)(\(([a-z_-]+)\))?!?:\ [a-z](.+)$ ]]; then
+    fail "The subject line does not follow the conventional commits conventions:\n$line1"
+fi
+declare -r type="${BASH_REMATCH[1]}"
+declare -r scope_part="${BASH_REMATCH[2]}"
+declare -r scope="${BASH_REMATCH[3]}"
+declare -r description="${BASH_REMATCH[4]}"
+if ! is_valid_type "$type"; then
+    fail "Invalid type: $type"
+fi
+if [[ -n "$scope_part" ]] && ! is_valid_scope "$scope"; then
+    fail "Invalid scope: $scope"
+fi
+if ! is_valid_description "$description"; then
+    fail "Invalid description: $description"
+fi
+declare -r line2="${lines[1]:-}"
+if [[ -n "$line2" ]]; then
+    fail "Second line not empty:\n$line2"
+fi
