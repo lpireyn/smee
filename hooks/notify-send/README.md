@@ -7,5 +7,5 @@ These hooks display a notification after some operations, using `notify-send`.
 Activate these hooks with:
 
 ``` shell
-git config set --global --append smee.hooks notify-send
+smee activate notify-send
 ```
