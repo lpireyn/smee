@@ -1,0 +1,1 @@
+squash! feat: this is a valid squash message

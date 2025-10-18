@@ -1,0 +1,7 @@
+feat: this is a valid message
+
+This is a valid line.
+This is another valid line.
+
+Example: this is a valid footer
+Another: and another one
