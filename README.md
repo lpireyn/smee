@@ -2,10 +2,10 @@
 
 **Smee** is a *Git hooks manager*.
 
-[![GitHub Release](https://img.shields.io/github/v/release/lpireyn/smee?logo=github&color=blue)](https://github.com/lpireyn/smee/releases/latest)
+[![GitHub Release](https://img.shields.io/github/v/release/lpireyn/smee?logo=github&label=Release&color=blue)](https://github.com/lpireyn/smee/releases/latest)
 [![GitHub CI Status](https://img.shields.io/github/actions/workflow/status/lpireyn/smee/ci.yml?branch=main&logo=github&label=CI)](https://github.com/lpireyn/smee/actions/workflows/ci.yml?query=branch%3Amain)
 [![Written in Rust](https://img.shields.io/badge/Written_in-Rust-orange?logo=rust)](https://rust-lang.org/)
-[![License](https://img.shields.io/github/license/lpireyn/smee?logo=apache&color=purple)](LICENSE)
+[![License](https://img.shields.io/github/license/lpireyn/smee?logo=apache&label=License&color=purple)](LICENSE)
 
 <img src="assets/mr-smee.png" alt="Mr. Smee (Disney, 1953)" width="151" height="240" align="right"/>
 
