@@ -18,6 +18,7 @@
 - Only one command: `smee` &mdash; no dependencies!
 - Configured entirely with `git config` &mdash; no configuration file!
 - Written in Rust :crab: &mdash; small and blazingly fast!
+- Comes with a bunch of ready-to-use hooks to get you started/inspired!
 
 ## Documentation
 
@@ -126,6 +127,11 @@ Smee is configured entirely with the Git configuration, under the `smee` section
 | `smee.dirs`        | Directories where Smee looks for user hooks (multiple values)                      |
 | `smee.hooks`       | Active user hooks (multiple values)                                                |
 | `smee.maxLogLevel` | Maximum log level (valid values: `OFF`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`) |
+
+## Hooks
+
+The [`hooks`](hooks) directory contains a bunch of ready-to-use hooks to get you started.
+See the [README](hooks/README.md) for instructions.
 
 ## Changelog
 
