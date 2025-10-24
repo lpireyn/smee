@@ -8,6 +8,10 @@ license = "Apache-2.0"
 repository = "https://github.com/lpireyn/smee/"
 
 [workspace.dependencies]
+eyre = "0.6"
+log = { version = "0.4", features = ["std"] }
+logger = { path = "crates/logger" }
+owo-colors = "4.2"
 smee = { path = "crates/smee" }
 
 [workspace.dependencies.clap]

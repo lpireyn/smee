@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//! Simple logger that prints messages to stderr, possibly with colors.
+
 use log::Level;
 use log::LevelFilter;
 use log::Log;
@@ -21,7 +23,19 @@ use owo_colors::OwoColorize;
 use owo_colors::Stream::Stderr;
 use owo_colors::style;
 
-/// Simple logger that prints messages to stderr, with a bit of colors.
+/// Initializes the simple logger.
+///
+/// # Panics
+///
+/// This function panics if a logger has already been installed.
+pub fn init(max_level: LevelFilter) {
+    let logger = Logger { max_level };
+    // NOTE: `SetLoggerError` does *not* implement `Error`
+    log::set_boxed_logger(Box::new(logger)).expect("logger already installed");
+    log::set_max_level(max_level);
+}
+
+/// Simple logger that prints messages to stderr, possibly with colors.
 #[derive(Debug)]
 struct Logger {
     max_level: LevelFilter,
@@ -50,18 +64,6 @@ impl Log for Logger {
     }
 
     fn flush(&self) {}
-}
-
-/// Initializes the logger.
-///
-/// # Panics
-///
-/// This function panics if a logger has already been installed.
-pub fn init(max_level: LevelFilter) {
-    let logger = Logger { max_level };
-    // NOTE: `SetLoggerError` does *not* implement `Error`
-    log::set_boxed_logger(Box::new(logger)).expect("logger already installed");
-    log::set_max_level(max_level);
 }
 
 #[cfg(test)]

@@ -13,8 +13,9 @@ path = "src/main.rs"
 
 [dependencies]
 clap.workspace = true
-eyre = "0.6"
+eyre.workspace = true
 is_executable = "1.0"
-log = { version = "0.4", features = ["std"] }
-owo-colors = { version = "4.2", features = ["supports-colors"] }
+log.workspace = true
+logger.workspace = true
+owo-colors = { workspace = true, features = ["supports-colors"] }
 tempfile = "3.23"

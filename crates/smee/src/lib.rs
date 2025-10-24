@@ -16,4 +16,3 @@ pub mod app;
 pub mod cli;
 
 mod git;
-mod logger;

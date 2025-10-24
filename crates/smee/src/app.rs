@@ -50,7 +50,6 @@ use crate::git::git_config_get_all;
 use crate::git::git_config_remove;
 use crate::git::git_hooks_path;
 use crate::git::git_work_tree;
-use crate::logger;
 
 /// Smee application.
 #[derive(Debug)]
