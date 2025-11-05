@@ -7,5 +7,5 @@ These hooks run `cargo test` to validate a commit.
 Activate these hooks with:
 
 ``` shell
-smee activate cargo/test
+smee hooks activate cargo/test
 ```

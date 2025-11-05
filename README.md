@@ -76,7 +76,7 @@ git config unset --global --value=DIRECTORY smee.dirs
 Once Smee knows where to look for user hooks, you can activate one or more hooks with:
 
 ```shell
-smee activate [SCOPE] HOOK...
+smee hooks activate [SCOPE] HOOK...
 ```
 
 where `SCOPE` is optional and is either:
@@ -87,7 +87,7 @@ where `SCOPE` is optional and is either:
 Similarly, you deactivate one or more hooks with:
 
 ```shell
-smee deactivate [SCOPE] HOOK...
+smee hooks deactivate [SCOPE] HOOK...
 ```
 
 **Note:**

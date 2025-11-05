@@ -7,5 +7,5 @@ These hooks display a notification after some operations, using `notify-send`.
 Activate these hooks with:
 
 ``` shell
-smee activate notify-send
+smee hooks activate notify-send
 ```

@@ -7,5 +7,5 @@ These hooks run `cargo fmt --check` to validate a commit.
 Activate these hooks with:
 
 ``` shell
-smee activate cargo/fmt-check
+smee hooks activate cargo/fmt-check
 ```

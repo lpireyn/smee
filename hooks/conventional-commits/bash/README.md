@@ -7,5 +7,5 @@ These hooks check that the commit messages follow the [Conventional Commits](htt
 Activate these hooks with:
 
 ``` shell
-smee activate conventional-commits/bash
+smee hooks activate conventional-commits/bash
 ```

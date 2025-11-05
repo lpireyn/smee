@@ -40,6 +40,8 @@ use crate::cli::ColorPolicy;
 use crate::cli::DeactivateArgs;
 use crate::cli::HookArgs;
 use crate::cli::HookScopeArgs;
+use crate::cli::HooksArgs;
+use crate::cli::HooksSubcommand;
 use crate::cli::SmeeCommand;
 use crate::cli::SmeeSubcommand;
 use crate::git::Scope;
@@ -102,8 +104,7 @@ impl App {
         if let Err(err) = match command.subcommand {
             SmeeSubcommand::Install => self.run_install(),
             SmeeSubcommand::Uninstall => self.run_uninstall(),
-            SmeeSubcommand::Activate(args) => self.run_activate(&args),
-            SmeeSubcommand::Deactivate(args) => self.run_deactivate(&args),
+            SmeeSubcommand::Hooks(args) => self.run_hooks(&args),
             SmeeSubcommand::Hook(args) => self.run_hook(&args),
         } {
             // Report error and exit with 1
@@ -197,7 +198,14 @@ impl App {
         Ok(())
     }
 
-    fn run_activate(self, args: &ActivateArgs) -> Result<()> {
+    fn run_hooks(self, args: &HooksArgs) -> Result<()> {
+        match &args.subcommand {
+            HooksSubcommand::Activate(args) => self.run_hooks_activate(args),
+            HooksSubcommand::Deactivate(args) => self.run_hooks_deactivate(args),
+        }
+    }
+
+    fn run_hooks_activate(self, args: &ActivateArgs) -> Result<()> {
         let scope = to_git_scope(&args.scope);
         for hook in &args.hooks {
             activate_hook(hook, scope)?;
@@ -205,7 +213,7 @@ impl App {
         Ok(())
     }
 
-    fn run_deactivate(self, args: &DeactivateArgs) -> Result<()> {
+    fn run_hooks_deactivate(self, args: &DeactivateArgs) -> Result<()> {
         let scope = to_git_scope(&args.scope);
         for hook in &args.hooks {
             deactivate_hook(hook, scope)?;

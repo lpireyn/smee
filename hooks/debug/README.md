@@ -7,5 +7,5 @@ These hooks print debug messages to stdout, as well as a few useful environment 
 Activate these hooks with:
 
 ``` shell
-smee activate debug
+smee hooks activate debug
 ```

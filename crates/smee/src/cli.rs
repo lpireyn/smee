@@ -77,17 +77,31 @@ pub enum SmeeSubcommand {
     #[command()]
     Uninstall,
 
-    /// Activate a user hook.
+    /// Manage user hooks.
     #[command()]
-    Activate(ActivateArgs),
-
-    /// Deactivate a user hook.
-    #[command()]
-    Deactivate(DeactivateArgs),
+    Hooks(HooksArgs),
 
     /// Run a hook with Smee.
     #[command()]
     Hook(HookArgs),
+}
+
+#[derive(Args, Debug)]
+pub struct HooksArgs {
+    #[command(subcommand)]
+    pub subcommand: HooksSubcommand,
+}
+
+#[derive(Debug, Subcommand)]
+#[command()]
+pub enum HooksSubcommand {
+    /// Activate user hooks.
+    #[command()]
+    Activate(ActivateArgs),
+
+    /// Deactivate user hooks.
+    #[command()]
+    Deactivate(DeactivateArgs),
 }
 
 #[derive(Args, Debug)]
