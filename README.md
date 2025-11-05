@@ -45,7 +45,8 @@ They typically rely on the same tools as the project itself.
 **Example:**
 a project hook `test` that runs the test suite of the project before each commit.
 
-Project hooks are stored in a project under the `.config/smee/hooks` directory.
+Project hooks are stored in a project under the `.config/smee/hooks` directory
+(as recommended by [the dot-config manifest](https://dot-config.github.io/)).
 If there is only one hook for an event (e.g., `pre-commit`), it can be stored directly under this directory (e.g., `.config/smee/hooks/pre-commit`).
 If there are several hooks, it is recommended to organize them in subdirectories (e.g., `.config/smee/hooks/test/pre-commit`, `.config/smee/hooks/style/pre-commit`, etc.).
 
@@ -132,6 +133,8 @@ Smee is configured entirely with the Git configuration, under the `smee` section
 
 The [`hooks`](hooks) directory contains a bunch of ready-to-use hooks to get you started.
 See the [README](hooks/README.md) for instructions.
+
+See also [Awesome Git hooks](https://github.com/aitemr/awesome-git-hooks) for more ideas.
 
 ## Changelog
 
