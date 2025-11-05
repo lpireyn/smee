@@ -200,9 +200,18 @@ impl App {
 
     fn run_hooks(self, args: &HooksArgs) -> Result<()> {
         match &args.subcommand {
+            HooksSubcommand::List => self.run_hooks_list(),
             HooksSubcommand::Activate(args) => self.run_hooks_activate(args),
             HooksSubcommand::Deactivate(args) => self.run_hooks_deactivate(args),
         }
+    }
+
+    fn run_hooks_list(self) -> Result<()> {
+        let hooks_names = git_config_get_all(KEY_HOOKS_NAMES, ValueType::String)?;
+        for hook_name in &hooks_names {
+            println!("{}", hook_name);
+        }
+        Ok(())
     }
 
     fn run_hooks_activate(self, args: &ActivateArgs) -> Result<()> {
