@@ -6,6 +6,7 @@ edition.workspace = true
 readme = "../../README.md"
 license.workspace = true
 repository.workspace = true
+default-run = "smee"
 
 [[bin]]
 name = "smee"
