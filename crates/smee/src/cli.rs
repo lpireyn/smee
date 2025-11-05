@@ -95,6 +95,10 @@ pub struct HooksArgs {
 #[derive(Debug, Subcommand)]
 #[command()]
 pub enum HooksSubcommand {
+    /// List the active user hooks.
+    #[command(visible_alias = "ls")]
+    List,
+
     /// Activate user hooks.
     #[command()]
     Activate(ActivateArgs),

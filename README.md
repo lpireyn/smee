@@ -90,6 +90,12 @@ Similarly, you deactivate one or more hooks with:
 smee hooks deactivate [SCOPE] HOOK...
 ```
 
+To list the active user hooks, simply run:
+
+```shell
+smee hooks list
+```
+
 **Note:**
 Since Smee is configured entirely within the Git configuration,
 you may want to edit the corresponding files directly.
