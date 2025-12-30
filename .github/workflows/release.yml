@@ -22,9 +22,10 @@ jobs:
         id: crate_metadata
         run: >
           cargo metadata --format-version=1 --no-deps |
-          jq --raw-output '
-          "name=" + .packages[0].name + "\n" +
-          "version=" + .packages[0].version + "\n"
+          jq  --raw-output '
+          .packages | map(select(.name == "smee"))[0] |
+          "name=" + .name + "\n" +
+          "version=" + .version + "\n"
           ' | tee -a $GITHUB_OUTPUT
     outputs:
       name: ${{ steps.crate_metadata.outputs.name }}
